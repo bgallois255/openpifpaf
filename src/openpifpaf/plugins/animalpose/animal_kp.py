@@ -31,11 +31,11 @@ class TrafficSignKp(DataModule):
     debug = False
     pin_memory = False
 
-    train_annotations = 'data-animalpose/annotations/animal_keypoints_20_train.json'        #A modifier
-    val_annotations = 'data-animalpose/annotations/animal_keypoints_20_val.json'            #A modifier
+    train_annotations = '/Users/benoitgallois/Desktop/EPFL/MA2/Deep Learning autonomuous vehicules/Projet/openpifpaf_traffic_sign/Detection/train_annotations.json'      
+    val_annotations = '/Users/benoitgallois/Desktop/EPFL/MA2/Deep Learning autonomuous vehicules/Projet/openpifpaf_traffic_sign/Detection/val_annotations.json'            #A modifier
     eval_annotations = val_annotations
-    train_image_dir = 'data-animalpose/images/train/'                                       #A modifier
-    val_image_dir = 'data-animalpose/images/val/'                                           #A modifier
+    train_image_dir = '~/.cache/huggingface/datasets/keremberke/german-traffic-sign-detection/train'                                       #A modifier
+    val_image_dir = 'data-animalpose/images/val/keremberke/german-traffic-sign-detection/test'                                           #A modifier
     eval_image_dir = val_image_dir
 
     n_images = None

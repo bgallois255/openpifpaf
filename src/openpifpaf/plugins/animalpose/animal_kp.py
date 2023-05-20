@@ -20,22 +20,22 @@ from openpifpaf import encoder, headmeta, metric, transforms
 from openpifpaf.datasets import collate_images_anns_meta, collate_images_targets_meta
 from openpifpaf.plugins.coco import CocoDataset as CocoLoader
 
-from .constants import ANIMAL_KEYPOINTS, ANIMAL_SKELETON, HFLIP, \
-    ANIMAL_SIGMAS, ANIMAL_POSE, ANIMAL_CATEGORIES, ANIMAL_SCORE_WEIGHTS
+from .constants import SIGN_KEYPOINTS, SIGN_SKELETON, \
+    SIGN_SIGMAS, SIGN_POSE, SIGN_CATEGORIES, SIGN_SCORE_WEIGHTS            
 
 
-class AnimalKp(DataModule):
+class TrafficSignKp(DataModule):
     """
     Adapted from the standard CocoKp class to work as external plugin
     """
     debug = False
     pin_memory = False
 
-    train_annotations = 'data-animalpose/annotations/animal_keypoints_20_train.json'
-    val_annotations = 'data-animalpose/annotations/animal_keypoints_20_val.json'
+    train_annotations = 'data-animalpose/annotations/animal_keypoints_20_train.json'        #A modifier
+    val_annotations = 'data-animalpose/annotations/animal_keypoints_20_val.json'            #A modifier
     eval_annotations = val_annotations
-    train_image_dir = 'data-animalpose/images/train/'
-    val_image_dir = 'data-animalpose/images/val/'
+    train_image_dir = 'data-animalpose/images/train/'                                       #A modifier
+    val_image_dir = 'data-animalpose/images/val/'                                           #A modifier
     eval_image_dir = val_image_dir
 
     n_images = None
@@ -57,17 +57,17 @@ class AnimalKp(DataModule):
     def __init__(self):
         super().__init__()
 
-        cif = headmeta.Cif('cif', 'animal',
-                           keypoints=ANIMAL_KEYPOINTS,
-                           sigmas=ANIMAL_SIGMAS,
-                           pose=ANIMAL_POSE,
-                           draw_skeleton=ANIMAL_SKELETON,
-                           score_weights=ANIMAL_SCORE_WEIGHTS)
-        caf = headmeta.Caf('caf', 'animal',
-                           keypoints=ANIMAL_KEYPOINTS,
-                           sigmas=ANIMAL_SIGMAS,
-                           pose=ANIMAL_POSE,
-                           skeleton=ANIMAL_SKELETON)
+        cif = headmeta.Cif('cif', 'traffic_sign',
+                           keypoints=SIGN_KEYPOINTS,
+                           sigmas=SIGN_SIGMAS,
+                           pose=SIGN_POSE,
+                           draw_skeleton=SIGN_SKELETON,
+                           score_weights=SIGN_SCORE_WEIGHTS)
+        caf = headmeta.Caf('caf', 'traffic_sign',
+                           keypoints=SIGN_KEYPOINTS,
+                           sigmas=SIGN_SIGMAS,
+                           pose=SIGN_POSE,
+                           skeleton=SIGN_SKELETON)
 
         cif.upsample_stride = self.upsample_stride
         caf.upsample_stride = self.upsample_stride
@@ -75,64 +75,64 @@ class AnimalKp(DataModule):
 
     @classmethod
     def cli(cls, parser: argparse.ArgumentParser):
-        group = parser.add_argument_group('data module Animal')
+        group = parser.add_argument_group('data module Traffic Sign')
 
-        group.add_argument('--animal-train-annotations',
+        group.add_argument('--traffic_sign-train-annotations',
                            default=cls.train_annotations)
-        group.add_argument('--animal-val-annotations',
+        group.add_argument('--traffic_sign-val-annotations',
                            default=cls.val_annotations)
-        group.add_argument('--animal-train-image-dir',
+        group.add_argument('--traffic_sign-train-image-dir',
                            default=cls.train_image_dir)
-        group.add_argument('--animal-val-image-dir',
+        group.add_argument('--traffic_sign-val-image-dir',
                            default=cls.val_image_dir)
 
-        group.add_argument('--animal-square-edge',
+        group.add_argument('--traffic_sign-square-edge',
                            default=cls.square_edge, type=int,
                            help='square edge of input images')
         assert not cls.extended_scale
-        group.add_argument('--animal-extended-scale',
+        group.add_argument('--traffic_sign-extended-scale',
                            default=False, action='store_true',
                            help='augment with an extended scale range')
-        group.add_argument('--animal-orientation-invariant',
+        group.add_argument('--traffic_sign-orientation-invariant',
                            default=cls.orientation_invariant, type=float,
                            help='augment with random orientations')
-        group.add_argument('--animal-blur',
+        group.add_argument('--traffic_sign-blur',
                            default=cls.blur, type=float,
                            help='augment with blur')
         assert cls.augmentation
-        group.add_argument('--animal-no-augmentation',
-                           dest='animal_augmentation',
+        group.add_argument('--traffic_sign-no-augmentation',
+                           dest='traffic_sign_augmentation',
                            default=True, action='store_false',
                            help='do not apply data augmentation')
-        group.add_argument('--animal-rescale-images',
+        group.add_argument('--traffic_sign-rescale-images',
                            default=cls.rescale_images, type=float,
                            help='overall rescale factor for images')
-        group.add_argument('--animal-upsample',
+        group.add_argument('--traffic_sign-upsample',
                            default=cls.upsample_stride, type=int,
                            help='head upsample stride')
-        group.add_argument('--animal-min-kp-anns',
+        group.add_argument('--traffic_sign-min-kp-anns',
                            default=cls.min_kp_anns, type=int,
                            help='filter images with fewer keypoint annotations')
-        group.add_argument('--animal-bmin',
+        group.add_argument('--traffic_sign-bmin',
                            default=cls.b_min, type=int,
                            help='b minimum in pixels')
 
         # evaluation  (TO setup directly)
         eval_set_group = group.add_mutually_exclusive_group()
-        eval_set_group.add_argument('--animal-eval-test2017', default=False, action='store_true')
-        eval_set_group.add_argument('--animal-eval-testdev2017', default=False, action='store_true')
+        eval_set_group.add_argument('--traffic_sign-eval-test2017', default=False, action='store_true')
+        eval_set_group.add_argument('--traffic_sign-eval-testdev2017', default=False, action='store_true')
 
-        group.add_argument('--animal-no-eval-annotation-filter',
-                           dest='animal_eval_annotation_filter',
+        group.add_argument('--traffic_sign-no-eval-annotation-filter',
+                           dest='traffic_sign_eval_annotation_filter',
                            default=True, action='store_false')
-        group.add_argument('--animal-eval-long-edge', default=cls.eval_long_edge, type=int,
-                           dest='animal_eval_long_edge', help='set to zero to deactivate rescaling')
+        group.add_argument('--traffic_sign-eval-long-edge', default=cls.eval_long_edge, type=int,
+                           dest='traffic_sign_eval_long_edge', help='set to zero to deactivate rescaling')
         assert not cls.eval_extended_scale
-        group.add_argument('--animal-eval-extended-scale', default=False, action='store_true',
-                           dest='animal_eval_extended_scale',)
-        group.add_argument('--animal-eval-orientation-invariant',
+        group.add_argument('--traffic_sign-eval-extended-scale', default=False, action='store_true',
+                           dest='traffic_sign_eval_extended_scale',)
+        group.add_argument('--traffic_sign-eval-orientation-invariant',
                            default=cls.eval_orientation_invariant, type=float,
-                           dest='animal_eval_orientation_invariant')
+                           dest='traffic_sign_eval_orientation_invariant')
 
     @classmethod
     def configure(cls, args: argparse.Namespace):
@@ -141,28 +141,28 @@ class AnimalKp(DataModule):
         cls.pin_memory = args.pin_memory
 
         # Animal specific
-        cls.train_annotations = args.animal_train_annotations
-        cls.val_annotations = args.animal_val_annotations
-        cls.train_image_dir = args.animal_train_image_dir
-        cls.val_image_dir = args.animal_val_image_dir
+        cls.train_annotations = args.traffic_sign_train_annotations
+        cls.val_annotations = args.traffic_sign_val_annotations
+        cls.train_image_dir = args.traffic_sign_train_image_dir
+        cls.val_image_dir = args.traffic_sign_val_image_dir
 
-        cls.square_edge = args.animal_square_edge
-        cls.extended_scale = args.animal_extended_scale
-        cls.orientation_invariant = args.animal_orientation_invariant
-        cls.blur = args.animal_blur
-        cls.augmentation = args.animal_augmentation  # loaded by the dest name
-        cls.rescale_images = args.animal_rescale_images
-        cls.upsample_stride = args.animal_upsample
-        cls.min_kp_anns = args.animal_min_kp_anns
-        cls.b_min = args.animal_bmin
+        cls.square_edge = args.traffic_sign_square_edge
+        cls.extended_scale = args.traffic_sign_extended_scale
+        cls.orientation_invariant = args.traffic_sign_orientation_invariant
+        cls.blur = args.traffic_sign_blur
+        cls.augmentation = args.traffic_sign_augmentation  # loaded by the dest name
+        cls.rescale_images = args.traffic_sign_rescale_images
+        cls.upsample_stride = args.traffic_sign_upsample
+        cls.min_kp_anns = args.traffic_sign_min_kp_anns
+        cls.b_min = args.traffic_sign_bmin
 
         # evaluation
-        cls.eval_annotation_filter = args.animal_eval_annotation_filter
-        cls.eval_long_edge = args.animal_eval_long_edge
-        cls.eval_orientation_invariant = args.animal_eval_orientation_invariant
-        cls.eval_extended_scale = args.animal_eval_extended_scale
+        cls.eval_annotation_filter = args.traffic_sign_eval_annotation_filter
+        cls.eval_long_edge = args.traffic_sign_eval_long_edge
+        cls.eval_orientation_invariant = args.traffic_sign_eval_orientation_invariant
+        cls.eval_extended_scale = args.traffic_sign_eval_extended_scale
 
-        if (args.animal_eval_test2017 or args.animal_eval_testdev2017) \
+        if (args.traffic_sign_eval_test2017 or args.traffic_sign_eval_testdev2017) \
                 and not args.write_predictions \
                 and not args.debug:
             raise Exception('have to use --write-predictions for this dataset')
@@ -194,7 +194,7 @@ class AnimalKp(DataModule):
         return transforms.Compose([
             transforms.NormalizeAnnotations(),
             transforms.RandomApply(
-                transforms.HFlip(ANIMAL_KEYPOINTS, HFLIP), 0.5),
+                transforms.HFlip(SIGN_KEYPOINTS, HFLIP), 0.5),
             rescale_t,
             transforms.RandomApply(
                 transforms.Blur(), self.blur),
@@ -278,11 +278,11 @@ class AnimalKp(DataModule):
             *self.common_eval_preprocess(),
             transforms.ToAnnotations([
                 transforms.ToKpAnnotations(
-                    ANIMAL_CATEGORIES,
+                    SIGN_CATEGORIES,
                     keypoints_by_category={1: self.head_metas[0].keypoints},
                     skeleton_by_category={1: self.head_metas[1].skeleton},
                 ),
-                transforms.ToCrowdAnnotations(ANIMAL_CATEGORIES),
+                transforms.ToCrowdAnnotations(SIGN_CATEGORIES),
             ]),
             transforms.EVAL_TRANSFORM,
         ])
@@ -307,5 +307,5 @@ class AnimalKp(DataModule):
             max_per_image=20,
             category_ids=[1],
             iou_type='keypoints',
-            keypoint_oks_sigmas=ANIMAL_SIGMAS,
+            keypoint_oks_sigmas=SIGN_SIGMAS,
         )]

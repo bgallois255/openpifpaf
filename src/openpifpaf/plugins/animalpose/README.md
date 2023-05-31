@@ -35,7 +35,7 @@ pip install thop
 from datasets import load_dataset
 ds = load_dataset("keremberke/german-traffic-sign-detection", name="full")
 
-Connect to your Drive:
+*Connect to your Drive:
 from google.colab import drive
 drive.mount('/content/drive')
 

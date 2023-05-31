@@ -1,58 +1,47 @@
-# openpifpaf_apollocar3d
+# openpifpaf_Traffic_Sign
 
 
 ## Setup
-```sh
+!git clone https://github.com/openpifpaf/openpifpaf.git
 pip install openpifpaf
 pip install gdown
 pip install scipy
 pip install thop
 ```
 
-### Dataset conversion
-Download VOC dataset and the new images from the AnimalPose dataset and their annotations
-```sh
-mkdir data
-mkdir data/animalpose
-cd data/animalpose
-pip install gdown
-gdown https://drive.google.com/uc\?id\=1UkZB-kHg4Eijcb2yRWVN94LuMJtAfjEI
-gdown https://drive.google.com/uc\?id\=1zjYczxVd2i8bl6QAqUlasS5LoZcQQu8b
-gdown https://drive.google.com/uc\?id\=1MDgiGMHEUY0s6w3h9uP9Ovl7KGQEDKhJ
-wget http://host.robots.ox.ac.uk/pascal/VOC/voc2011/VOCtrainval_25-May-2011.tar
-tar -xvf keypoint_image_part2.tar.gz
-tar -xvf keypoint_anno_part2.tar.gz
-tar -xvf keypoint_anno_part1.tar.gz
-tar -xvf VOCtrainval_25-May-2011.tar
-rm keypoint_*.tar.gz
-rm VOCtrainval_25-May-2011.tar
-```
+### Dataset downloading
 
+!pip install datasets
 
+from datasets import load_dataset
+ds = load_dataset("keremberke/german-traffic-sign-detection", name="full")
 
-(in case CUDA 9 as driver:
-` pip install torch==1.7.1+cu92 torchvision==0.8.2+cu92 -f https://download.pytorch.org/whl/torch_stable.html`)
+Connect to your Drive:
+from google.colab import drive
+drive.mount('/content/drive')
 
-* Download openpifpaf_animalpose, and create the following directories:
-    * `mkdir data`
-    * soft link output directory, which needs to be called outputs
-    * soft link to animalpose dataset
-    * create apollo-coco directory with `images/train`, `images/val`, `annotations` subdirectories and soft link them.
+import os
+from PIL import Image
 
+*Assuming var_1 is your list of PIL image objects
+var_1 = ds['validation']['image']  # your list of PIL Image objects here
 
+*Create a new directory in Google Drive for saving the images
+new_dir = "/content/drive/My Drive/GTSDB/val"
+os.makedirs(new_dir, exist_ok=True)
 
-## Preprocess Dataset
-`python -m openpifpaf_animalpose.voc_to_coco`
-Use the argument `--split_images` to create a training val split copying original images in the new folders
+*Loop through the images and save each one to the new directory
+for i, img in enumerate(var_1):
+    img.save(os.path.join(new_dir, f'image_{i}.jpg'))
 
-## Show poses
-`python -m openpifpaf_apollocar3d.utils.constants`
-
-## Pretrained models
-TODO
 
 ## Train
-TODO
+!python3 -m openpifpaf.train \
+  --lr=0.0003 --momentum=0.95 --clip-grad-value=10.0 --b-scale=10.0 \
+  --batch-size=16 --loader-workers=12 \
+  --epochs=400 --lr-decay 360 380 --lr-decay-epochs=10 --val-interval 5 \
+  --checkpoint=shufflenetv2k30 --lr-warm-up-start-epoch=250 \
+  --dataset=traffic_sign --weight-decay=1e-5
 
 ## Everything else
 All pifpaf options and commands still hold, please check the

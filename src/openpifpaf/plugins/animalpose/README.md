@@ -33,9 +33,11 @@ pip install thop
 !pip install datasets
 
 from datasets import load_dataset
+
 ds = load_dataset("keremberke/german-traffic-sign-detection", name="full")
 
 *Connect to your Drive:
+
 from google.colab import drive
 drive.mount('/content/drive')
 
@@ -43,13 +45,16 @@ import os
 from PIL import Image
 
 *Assuming var_1 is your list of PIL image objects
+
 var_1 = ds['validation']['image']  # your list of PIL Image objects here
 
 *Create a new directory in Google Drive for saving the images
+
 new_dir = "/content/drive/My Drive/GTSDB/val"
 os.makedirs(new_dir, exist_ok=True)
 
 *Loop through the images and save each one to the new directory
+
 for i, img in enumerate(var_1):
     img.save(os.path.join(new_dir, f'image_{i}.jpg'))
 

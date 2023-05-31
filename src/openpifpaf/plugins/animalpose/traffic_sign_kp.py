@@ -20,7 +20,7 @@ from openpifpaf import encoder, headmeta, metric, transforms
 from openpifpaf.datasets import collate_images_anns_meta, collate_images_targets_meta
 from openpifpaf.plugins.coco import CocoDataset as CocoLoader
 
-from .constants import SIGN_KEYPOINTS, SIGN_SKELETON, \
+from .constants import SIGN_KEYPOINTS, SIGN_SKELETON, 
     SIGN_SIGMAS, SIGN_POSE, SIGN_CATEGORIES, SIGN_SCORE_WEIGHTS            
 
 
@@ -32,10 +32,10 @@ class TrafficSignKp(DataModule):
     pin_memory = False
 
     train_annotations = '/Users/benoitgallois/Desktop/EPFL/MA2/Deep Learning autonomuous vehicules/Projet/openpifpaf_traffic_sign/Detection/train_annotations.json'      
-    val_annotations = '/Users/benoitgallois/Desktop/EPFL/MA2/Deep Learning autonomuous vehicules/Projet/openpifpaf_traffic_sign/Detection/val_annotations.json'            #A modifier
+    val_annotations = '/Users/benoitgallois/Desktop/EPFL/MA2/Deep Learning autonomuous vehicules/Projet/openpifpaf_traffic_sign/Detection/val_annotations.json'        
     eval_annotations = val_annotations
-    train_image_dir = '~/.cache/huggingface/datasets/keremberke/german-traffic-sign-detection/train'                                       #A modifier
-    val_image_dir = 'data-animalpose/images/val/keremberke/german-traffic-sign-detection/test'                                           #A modifier
+    train_image_dir = '/Users/benoitgallois/Desktop/EPFL/MA2/Deep Learning autonomuous vehicules/Projet/openpifpaf_traffic_sign/Detection/Train'                                      
+    val_image_dir = '/Users/benoitgallois/Desktop/EPFL/MA2/Deep Learning autonomuous vehicules/Projet/openpifpaf_traffic_sign/Detection/Val'                                         
     eval_image_dir = val_image_dir
 
     n_images = None
@@ -140,7 +140,7 @@ class TrafficSignKp(DataModule):
         cls.debug = args.debug
         cls.pin_memory = args.pin_memory
 
-        # Animal specific
+        # Traffic_sign specific
         cls.train_annotations = args.traffic_sign_train_annotations
         cls.val_annotations = args.traffic_sign_val_annotations
         cls.train_image_dir = args.traffic_sign_train_image_dir
@@ -193,8 +193,6 @@ class TrafficSignKp(DataModule):
 
         return transforms.Compose([
             transforms.NormalizeAnnotations(),
-            transforms.RandomApply(
-                transforms.HFlip(SIGN_KEYPOINTS, HFLIP), 0.5),
             rescale_t,
             transforms.RandomApply(
                 transforms.Blur(), self.blur),

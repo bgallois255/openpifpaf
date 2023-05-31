@@ -42,14 +42,14 @@ SIGN_SIGMAS = [         #Valueà 0.09 pour tester, à ajuster par la suite
 ]
 
 split, error = divmod(len(SIGN_KEYPOINTS), 4)
-SIGN_SCORE_WEIGHTS = 1 * error     
+SIGN_SCORE_WEIGHTS = [1 * error, 1 * error, 1 * error, 1 * error]    
 
 SIGN_CATEGORIES = ['traffic sign']
 
 SIGN_POSE = np.array([         
     [0.0, 0.0, 1],      # 'Corner_inf_left'        
     [40.0, 0.0, 1],     # 'Corner_inf_right'      
-    [40.0, 40.0, 1],      # 'Corner_sup_right'      
+    [40.0, 40.0, 1],    # 'Corner_sup_right'      
     [0.0, 40.0, 1],     # 'Corner_sup_left'       
 ])
 
